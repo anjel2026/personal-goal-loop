@@ -1,0 +1,40 @@
+name: Idea
+description: Propose an improvement to the loop, tooling, docs, or templates.
+title: "[Idea]: "
+labels: ["idea"]
+body:
+  - type: textarea
+    id: capture
+    attributes:
+      label: Capture
+      description: What did you notice, need, or repeat?
+    validations:
+      required: true
+  - type: textarea
+    id: synthesis
+    attributes:
+      label: Synthesis
+      description: What reusable idea might come from this?
+    validations:
+      required: true
+  - type: dropdown
+    id: promotion
+    attributes:
+      label: Promotion target
+      options:
+        - template
+        - rule
+        - script
+        - checklist
+        - test
+        - not sure
+    validations:
+      required: true
+  - type: textarea
+    id: privacy
+    attributes:
+      label: Privacy notes
+      description: Confirm that no real personal or business data is included.
+    validations:
+      required: true
+

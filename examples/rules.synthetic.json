@@ -1,0 +1,32 @@
+{
+  "exact_text_replacements": {},
+  "regex_replacements": [
+    {
+      "pattern": "\\b[0-9]{3}-[0-9]{4}-[0-9]{4}\\b",
+      "replacement": "[redacted-phone]"
+    },
+    {
+      "pattern": "[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}",
+      "replacement": "[redacted-email]"
+    }
+  ],
+  "sheet_cell_replacements": {},
+  "preserve_sheet_titles": [
+    "Summary"
+  ],
+  "auto_rename_sheet_titles": true,
+  "sheet_title_prefix": "P",
+  "sheet_title_width": 3,
+  "display_name_cells": [
+    "D2"
+  ],
+  "derive_text_replacements_from_sheet_titles": true,
+  "clear_comments": true,
+  "clear_hyperlinks": true,
+  "sanitize_properties": true,
+  "metadata_overrides": {
+    "creator": "Personal Goal Loop",
+    "lastModifiedBy": "Personal Goal Loop"
+  }
+}
+

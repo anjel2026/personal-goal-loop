@@ -1,0 +1,18 @@
+{
+  "tokens": [
+    "Alice Example",
+    "Bob Example",
+    "Carol Example",
+    "Delta Example",
+    "Alice",
+    "Bob",
+    "Carol",
+    "Delta",
+    "alice@example.test",
+    "bob@example.test",
+    "carol@example.test",
+    "carol.copy@example.test",
+    "delta@example.test"
+  ],
+  "regex_patterns": []
+}

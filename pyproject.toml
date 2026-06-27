@@ -1,0 +1,49 @@
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "personal-goal-loop"
+version = "0.1.0"
+description = "Reusable improvement loop and privacy tooling for AI-assisted project work."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+authors = [
+  { name = "Personal Goal Loop contributors" }
+]
+dependencies = [
+  "openpyxl>=3.1.0"
+]
+
+[project.optional-dependencies]
+dev = [
+  "build>=1.2",
+  "pytest>=8.0",
+  "ruff>=0.6.0",
+  "mypy>=1.10"
+]
+
+[project.scripts]
+pgl-anonymize-workbook = "personal_goal_loop.cli:anonymize_workbook_main"
+pgl-pii-gate = "personal_goal_loop.pii_gate:main"
+pgl-create-project-card = "personal_goal_loop.loop_cli:create_project_card_main"
+pgl-create-run-review = "personal_goal_loop.loop_cli:create_run_review_main"
+pgl-promotion-candidates = "personal_goal_loop.loop_cli:promotion_candidates_main"
+pgl-update-promotion-log = "personal_goal_loop.loop_cli:update_promotion_log_main"
+pgl-github-issue-drafts = "personal_goal_loop.loop_cli:github_issue_drafts_main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.mypy]
+python_version = "3.11"
+ignore_missing_imports = true
+strict = true
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]

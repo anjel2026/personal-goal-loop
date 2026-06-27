@@ -1,0 +1,31 @@
+{
+  "dry_run": false,
+  "policy_version": "workbook-anonymizer/v1",
+  "sensitive_fields_redacted": true,
+  "total_cells_changed": 10,
+  "total_comments_removed": 1,
+  "total_hyperlinks_removed": 0,
+  "derived_text_replacements_count": 8,
+  "renamed_sheets_count": 2,
+  "renamed_sheets": {
+    "source_sheet_001": "P001",
+    "source_sheet_002": "P002"
+  },
+  "sheets": {
+    "sheet_001": {
+      "cells_changed": 4,
+      "comments_removed": 0,
+      "hyperlinks_removed": 0
+    },
+    "sheet_002": {
+      "cells_changed": 3,
+      "comments_removed": 1,
+      "hyperlinks_removed": 0
+    },
+    "sheet_003": {
+      "cells_changed": 3,
+      "comments_removed": 0,
+      "hyperlinks_removed": 0
+    }
+  }
+}
