@@ -24,6 +24,20 @@ function Invoke-Step {
     & $Script
 }
 
+function Invoke-Native {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$FilePath,
+        [Parameter(ValueFromRemainingArguments = $true)]
+        [string[]]$ArgumentList
+    )
+
+    & $FilePath @ArgumentList
+    if ($LASTEXITCODE -ne 0) {
+        throw "Command failed with exit code ${LASTEXITCODE}: $FilePath $($ArgumentList -join ' ')"
+    }
+}
+
 function Remove-RepoPath {
     param([Parameter(Mandatory = $true)][string]$Path)
 
@@ -36,7 +50,13 @@ function Remove-RepoPath {
         throw "Refusing to remove outside repository: $resolved"
     }
 
-    Remove-Item -LiteralPath $resolved -Recurse -Force
+    try {
+        Remove-Item -LiteralPath $resolved -Recurse -Force -ErrorAction Stop
+    }
+    catch {
+        Write-Warning "Could not remove generated path: $resolved"
+        Write-Warning $_.Exception.Message
+    }
 }
 
 function Clear-GeneratedState {
@@ -64,8 +84,33 @@ function Clear-GeneratedState {
 }
 
 function Assert-NoGeneratedWorkbookResidue {
-    $residue = Get-ChildItem -Recurse -File -Include *.xlsx,*.xlsm,*.anonymize-report.json |
-        Where-Object { $_.FullName -notlike "*\.tmp\*" }
+    $patterns = @("*.xlsx", "*.xlsm", "*.anonymize-report.json")
+    $excludedRootDirs = @(
+        ".git",
+        ".tmp",
+        "build",
+        "dist",
+        ".pytest_cache",
+        ".mypy_cache",
+        ".ruff_cache"
+    )
+    $residue = @()
+
+    foreach ($item in Get-ChildItem -LiteralPath $RepoRoot -Force) {
+        if ($item.PSIsContainer) {
+            if ($excludedRootDirs -contains $item.Name) {
+                continue
+            }
+            $residue += Get-ChildItem -LiteralPath $item.FullName -Recurse -File -Include $patterns
+            continue
+        }
+
+        foreach ($pattern in $patterns) {
+            if ($item.Name -like $pattern) {
+                $residue += $item
+            }
+        }
+    }
 
     if ($residue) {
         $paths = ($residue | Select-Object -ExpandProperty FullName) -join [Environment]::NewLine
@@ -75,22 +120,31 @@ function Assert-NoGeneratedWorkbookResidue {
 
 Invoke-Step "Clean previous generated state" { Clear-GeneratedState }
 
+$TempRoot = Join-Path $RepoRoot (".tmp\p" + [guid]::NewGuid().ToString("N").Substring(0, 8))
+New-Item -ItemType Directory -Force -Path $TempRoot | Out-Null
+$env:TMP = $TempRoot
+$env:TEMP = $TempRoot
+$env:PYTEST_DEBUG_TEMPROOT = $TempRoot
+$env:PYTHONUTF8 = "1"
+$env:PYTHONIOENCODING = "utf-8"
+$env:PIP_DISABLE_PIP_VERSION_CHECK = "1"
+
 if (-not $SkipInstall) {
     Invoke-Step "Install package with dev dependencies" {
-        python -m pip install -e ".[dev]"
+        Invoke-Native python -m pip install -e ".[dev]"
     }
 }
 
-Invoke-Step "Lint" { python -m ruff check . }
-Invoke-Step "Type check" { python -m mypy src }
-Invoke-Step "Tests" { python -m pytest }
+Invoke-Step "Lint" { Invoke-Native python -m ruff check . }
+Invoke-Step "Type check" { Invoke-Native python -m mypy src }
+Invoke-Step "Tests" { Invoke-Native python "-m" "pytest" "-p" "no:cacheprovider" }
 
 Invoke-Step "Generate synthetic workbook" {
-    python tests/fixtures/make_synthetic_workbook.py
+    Invoke-Native python tests/fixtures/make_synthetic_workbook.py
 }
 
 Invoke-Step "Anonymizer dry run" {
-    pgl-anonymize-workbook `
+    Invoke-Native pgl-anonymize-workbook `
         --input tests/fixtures/synthetic_timecard.xlsx `
         --output .tmp/synthetic_timecard_anonymized.xlsx `
         --rules examples/rules.synthetic.json `
@@ -98,7 +152,7 @@ Invoke-Step "Anonymizer dry run" {
 }
 
 Invoke-Step "Anonymize synthetic workbook" {
-    pgl-anonymize-workbook `
+    Invoke-Native pgl-anonymize-workbook `
         --input tests/fixtures/synthetic_timecard.xlsx `
         --output .tmp/synthetic_timecard_anonymized.xlsx `
         --rules examples/rules.synthetic.json `
@@ -106,27 +160,27 @@ Invoke-Step "Anonymize synthetic workbook" {
 }
 
 Invoke-Step "Synthetic output PII gate" {
-    pgl-pii-gate .tmp/synthetic_timecard_anonymized.xlsx --denylist examples/denylist.synthetic.json
-    pgl-pii-gate .tmp/synthetic_timecard_anonymized.anonymize-report.json --denylist examples/denylist.synthetic.json
+    Invoke-Native pgl-pii-gate .tmp/synthetic_timecard_anonymized.xlsx --denylist examples/denylist.synthetic.json
+    Invoke-Native pgl-pii-gate .tmp/synthetic_timecard_anonymized.anonymize-report.json --denylist examples/denylist.synthetic.json
 }
 
 Invoke-Step "Synthetic full-tree smoke gate" {
-    pgl-pii-gate . --denylist examples/denylist.synthetic.json --exclude examples/** --exclude tests/**
+    Invoke-Native pgl-pii-gate . --denylist examples/denylist.synthetic.json --exclude examples/** --exclude tests/**
 }
 
 Invoke-Step "Improvement loop smoke test" {
-    pgl-create-project-card `
+    Invoke-Native pgl-create-project-card `
         --intake template-vault/00_Inbox/Project_Intake.md `
         --output .tmp/PROJECT_CARD.md `
         --title "Synthetic Fixture Work" `
         --overwrite
-    pgl-create-run-review `
+    Invoke-Native pgl-create-run-review `
         --project-card .tmp/PROJECT_CARD.md `
         --output .tmp/RUN_REVIEW.md `
         --overwrite
-    pgl-promotion-candidates .tmp --output .tmp/PROMOTION_CANDIDATES.md --overwrite
-    pgl-update-promotion-log .tmp --log .tmp/PROMOTION_LOG.md --date 2026-01-01
-    pgl-github-issue-drafts .tmp --output .tmp/GITHUB_ISSUE_DRAFTS.md --overwrite
+    Invoke-Native pgl-promotion-candidates .tmp --output .tmp/PROMOTION_CANDIDATES.md --overwrite
+    Invoke-Native pgl-update-promotion-log .tmp --log .tmp/PROMOTION_LOG.md --date 2026-01-01
+    Invoke-Native pgl-github-issue-drafts .tmp --output .tmp/GITHUB_ISSUE_DRAFTS.md --overwrite
 }
 
 if ($PrivateDenylist) {
@@ -135,7 +189,7 @@ if ($PrivateDenylist) {
         if ($denylistPath.StartsWith($RepoRoot + [IO.Path]::DirectorySeparatorChar)) {
             throw "Private denylist must be stored outside the repository: $denylistPath"
         }
-        pgl-pii-gate . --denylist $denylistPath
+        Invoke-Native pgl-pii-gate . --denylist $denylistPath
     }
 }
 else {
@@ -143,7 +197,7 @@ else {
     Write-Host "==> Private denylist gate skipped; pass -PrivateDenylist <path-outside-repo> for release."
 }
 
-Invoke-Step "Build Python package" { python -m build }
+Invoke-Step "Build Python package" { Invoke-Native python -m build }
 
 Invoke-Step "Package template vault" {
     Compress-Archive -Path template-vault\* -DestinationPath dist\template-vault.zip -Force
@@ -177,6 +231,9 @@ for artifact in artifacts:
         raise SystemExit(f"{artifact} contains blocked entries: {flags}")
     print(f"{artifact}: entries={len(names)}")
 '@ | python -
+    if ($LASTEXITCODE -ne 0) {
+        throw "Release artifact audit failed."
+    }
 }
 
 if ($KeepArtifacts) {

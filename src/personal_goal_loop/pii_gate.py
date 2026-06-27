@@ -27,6 +27,7 @@ DEFAULT_EXCLUDE_PATTERNS = [
     ".pytest_cache/**",
     ".mypy_cache/**",
     ".ruff_cache/**",
+    ".tmp/**",
     "build/**",
     "dist/**",
     "*.egg-info/**",

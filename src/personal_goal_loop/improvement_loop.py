@@ -159,7 +159,7 @@ def extract_heading(text: str) -> str:
 
 def collect_promotion_candidates(paths: Iterable[Path]) -> list[PromotionCandidate]:
     candidates: list[PromotionCandidate] = []
-    for file_path in iter_markdown_files(paths):
+    for file_path, source_root in iter_markdown_files(paths):
         text = file_path.read_text(encoding="utf-8")
         fields = parse_markdown_fields(text)
         for field_name, promotion_type in [
@@ -172,7 +172,7 @@ def collect_promotion_candidates(paths: Iterable[Path]) -> list[PromotionCandida
             if is_meaningful_value(value):
                 candidates.append(
                     PromotionCandidate(
-                        source_path=safe_display_path(file_path),
+                        source_path=safe_display_path(file_path, source_root),
                         promotion_type=promotion_type,
                         value=value,
                     )
@@ -271,15 +271,15 @@ def render_github_issue_drafts(candidates: list[PromotionCandidate]) -> str:
     return "\n".join(lines)
 
 
-def iter_markdown_files(paths: Iterable[Path]) -> Iterable[Path]:
+def iter_markdown_files(paths: Iterable[Path]) -> Iterable[tuple[Path, Path]]:
     for path in paths:
         resolved = path.expanduser().resolve()
         if resolved.is_dir():
             for file_path in sorted(resolved.rglob("*.md")):
                 if file_path.is_file():
-                    yield file_path
+                    yield file_path, resolved
         elif resolved.is_file() and resolved.suffix.lower() == ".md":
-            yield resolved
+            yield resolved, resolved.parent
 
 
 def write_text(path: Path, text: str, *, overwrite: bool = False) -> None:
@@ -305,8 +305,13 @@ def clean_field_value(value: str) -> str:
     return stripped
 
 
-def safe_display_path(path: Path) -> str:
+def safe_display_path(path: Path, source_root: Path | None = None) -> str:
     resolved = path.expanduser().resolve()
+    if source_root is not None:
+        try:
+            return resolved.relative_to(source_root.expanduser().resolve()).as_posix()
+        except ValueError:
+            pass
     try:
         return resolved.relative_to(Path.cwd().resolve()).as_posix()
     except ValueError:
