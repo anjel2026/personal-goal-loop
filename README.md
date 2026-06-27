@@ -26,6 +26,21 @@ Each run should leave behind a small artifact that can be reviewed, rejected, or
 - `pgl-github-issue-drafts`: turn promotion candidates into copy-pasteable GitHub issue drafts
 - `template-vault/`: Obsidian-ready notes for project intake and post-run review
 
+## Private Vault Workflow
+
+Use a private Obsidian vault for raw notes, images, workbooks, identity maps, and
+business-specific context. Use this public repository only for synthetic,
+reusable, reviewable assets.
+
+- [Private Vault Operating Guide](docs/private-vault-operating-guide.md)
+- [Safe Codex Handoff](docs/safe-codex-handoff.md)
+- [Public / Private Boundary](docs/public-private-boundary.md)
+- [Improvement Loop](docs/improvement-loop.md)
+
+The template vault includes public-safe handoff templates under
+`template-vault/50_Codex_Handoff/` and a promotion gate under
+`template-vault/60_Improvements/`.
+
 ## Quick Start
 
 ```powershell

@@ -22,6 +22,16 @@ This repository must be useful without private data.
 - private notes
 - original images and scans
 
+## Safe Handoff
+
+Safe handoff notes are the bridge between private work and reusable public
+improvements. They may be shared only after sensitive values are replaced with
+synthetic IDs and raw files are removed.
+
+Use [safe-codex-handoff.md](safe-codex-handoff.md) and
+[private-vault-operating-guide.md](private-vault-operating-guide.md) before
+promoting private workflow lessons into the public repository.
+
 ## Release Rule
 
 Before publishing, run:

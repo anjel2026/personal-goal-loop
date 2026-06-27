@@ -25,6 +25,26 @@ Promote an artifact when it is useful in at least two runs or prevents a high-im
 
 Archive it when it is too specific, confusing, or not reused after review.
 
+## Private-To-Public Promotion
+
+Private vault material should not be promoted directly. Promote only the
+reusable lesson that can survive without the private source.
+
+Use this sequence:
+
+1. Draft privately.
+2. Create a safe handoff with synthetic identifiers.
+3. Record what was sent to Codex.
+4. Extract the reusable improvement.
+5. Run the promotion gate.
+6. Convert the result into a template, rule, script, checklist, doc, or issue draft.
+
+See also:
+
+- [Private Vault Operating Guide](private-vault-operating-guide.md)
+- [Safe Codex Handoff](safe-codex-handoff.md)
+- `template-vault/60_Improvements/IMPROVEMENT_PROMOTION_GATE.md`
+
 ## CLI Workflow
 
 ```powershell

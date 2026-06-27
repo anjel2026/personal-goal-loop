@@ -1,0 +1,56 @@
+name: Improvement Promotion
+description: Promote a public-safe improvement from a private workflow.
+title: "[Improvement]: "
+labels:
+  - improvement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template only for public-safe improvements. Do not include raw files, private paths, identity data, business data, images, screenshots, credentials, tokens, keys, or secrets.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What reusable improvement should be added?
+    validations:
+      required: true
+  - type: dropdown
+    id: type
+    attributes:
+      label: Promotion type
+      options:
+        - Template
+        - Rule
+        - Script
+        - Checklist
+        - Documentation
+        - GitHub Issue
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: What proves this is complete?
+      placeholder: |
+        - Uses synthetic examples only.
+        - Contains no private data.
+        - Includes verification steps.
+    validations:
+      required: true
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Public-ready privacy checks
+      options:
+        - label: No identity data.
+          required: true
+        - label: No business-specific data.
+          required: true
+        - label: No raw files, images, or screenshots.
+          required: true
+        - label: No private local paths.
+          required: true
+        - label: No credentials, tokens, keys, or secrets.
+          required: true
