@@ -35,6 +35,7 @@ reusable, reviewable assets.
 - [Private Vault Operating Guide](docs/private-vault-operating-guide.md)
 - [Safe Codex Handoff](docs/safe-codex-handoff.md)
 - [Local Safety Automation](docs/local-safety-automation.md)
+- [Cross-Project Atlas](docs/cross-project-atlas.md)
 - [Public / Private Boundary](docs/public-private-boundary.md)
 - [Improvement Loop](docs/improvement-loop.md)
 

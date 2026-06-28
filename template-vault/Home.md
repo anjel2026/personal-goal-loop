@@ -10,3 +10,4 @@ Start here for a project run.
 - [Safe Share Checklist](50_Codex_Handoff/SAFE_SHARE_CHECKLIST.md)
 - [Improvement Promotion Gate](60_Improvements/IMPROVEMENT_PROMOTION_GATE.md)
 - [Local Safety Scan Checklist](60_Improvements/LOCAL_SAFETY_SCAN_CHECKLIST.md)
+- [Cross-Project Atlas Card](60_Improvements/CROSS_PROJECT_ATLAS_CARD.md)
