@@ -9,3 +9,4 @@ Start here for a project run.
 - [Codex Safe Handoff](50_Codex_Handoff/CODEX_SAFE_HANDOFF.md)
 - [Safe Share Checklist](50_Codex_Handoff/SAFE_SHARE_CHECKLIST.md)
 - [Improvement Promotion Gate](60_Improvements/IMPROVEMENT_PROMOTION_GATE.md)
+- [Local Safety Scan Checklist](60_Improvements/LOCAL_SAFETY_SCAN_CHECKLIST.md)
